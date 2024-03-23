@@ -11,10 +11,10 @@ class GeneratePasswordScreen extends StatefulWidget {
 }
 
 class _GeneratePasswordScreenState extends State<GeneratePasswordScreen> {
-  static const String _upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  static const String _lowerCase = 'abcdefghijklmnopqrstuvwxyz';
-  static const String _numbers = '1234567890';
-  static const String _symbols = '!@#\$%^&*()<>,./';
+  static final List<String> _upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  static final List<String> _lowerCase = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  static final List<String> _numbers = '1234567890'.split('');
+  static final List<String> _symbols = '!@#\$%^&*()<>,./'.split('');
 
   static final _thumbIcon = MaterialStateProperty.resolveWith<Icon?>((states) {
     if (states.contains(MaterialState.selected)) {
@@ -35,46 +35,50 @@ class _GeneratePasswordScreenState extends State<GeneratePasswordScreen> {
   bool _numbersSelected = true;
   bool _symbolsSelected = true;
 
-  String _generatePassword() {
-    String password = '';
-    String seed = _includeCharsController.text;
+  List<String> _generateSeed() {
+    final List<String> seed = _includeCharsController.text.split('');
 
     if (_upperCaseSelected) {
-      seed += _upperCase;
+      seed.addAll(_upperCase);
     }
 
     if (_lowerCaseSelected) {
-      seed += _lowerCase;
+      seed.addAll(_lowerCase);
     }
 
     if (_numbersSelected) {
-      seed += _numbers;
+      seed.addAll(_numbers);
     }
 
     if (_symbolsSelected) {
-      seed += _symbols;
+      seed.addAll(_symbols);
     }
+
+    return seed;
+  }
+
+  String _generatePassword() {
+    final List<String> seed = _generateSeed();
 
     if (seed.isEmpty) {
       throw Exception('No selection made!');
     }
 
-    final List<String> seedList = seed.split('');
-
+    // So as to prevent using the same character twice in a password when possible
     final bool useUniqueCharacters = _passwordLength < seed.length;
 
+    final password = StringBuffer();
+
     for (int i = 0; i < _passwordLength; ++i) {
-      late String randomChar;
+      final index = _random.nextInt(seed.length);
 
-      do {
-        final int index = _random.nextInt(seedList.length);
-        randomChar = seedList[index];
-      } while (useUniqueCharacters && password.contains(randomChar));
+      final randomChar =
+          useUniqueCharacters ? seed.removeAt(index) : seed[index];
 
-      password += randomChar;
+      password.write(randomChar);
     }
 
-    return password;
+    return password.toString();
   }
 
   @override

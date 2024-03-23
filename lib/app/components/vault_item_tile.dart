@@ -153,7 +153,7 @@ class _VaultItemTileState extends State<VaultItemTile> {
                       children: [
                         Text(
                           widget.vaultItem.isPasswordVisible
-                              ? widget.vaultItem.password.toString()
+                              ? widget.vaultItem.password
                               : widget.vaultItem.obscuredPassword,
                         ),
                         const SizedBox(width: 20.0),
