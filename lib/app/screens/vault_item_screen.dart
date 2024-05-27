@@ -64,7 +64,7 @@ class _VaultItemScreenState extends State<VaultItemScreen> {
               if (_formKey.currentState!.validate()) {
                 widget.vaultItem != null
                     ? await _vaultItem.save()
-                    : await HiveHelper.instance.vaultItemBox.add(_vaultItem);
+                    : await HiveHelper.vaultItemBox.add(_vaultItem);
 
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pop(true);
@@ -149,7 +149,7 @@ class _VaultItemScreenState extends State<VaultItemScreen> {
                   ),
                   trailing: PopupMenuButton(
                     itemBuilder: (context) {
-                      return HiveHelper.instance.categories.map((category) {
+                      return HiveHelper.categories.map((category) {
                         return CheckedPopupMenuItem(
                           value: category,
                           checked: category == _vaultItem.category,

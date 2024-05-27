@@ -8,7 +8,7 @@ class ConfirmWithPinDialog extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? _pinValidator(String? value) {
-    final bool validated = HiveHelper.instance.userInfo.matchPin(value ?? '');
+    final bool validated = HiveHelper.userInfo.matchPin(value ?? '');
 
     if (validated) {
       return null;

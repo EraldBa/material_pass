@@ -10,7 +10,7 @@ class EntryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HiveHelper.userExists
-        ? (HiveHelper.instance.userInfo.pinTries > 0
+        ? (HiveHelper.userInfo.pinTries > 0
             ? const PinScreen()
             : const ExtraPasswordPage())
         : const IntroductionScreen();

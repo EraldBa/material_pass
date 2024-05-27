@@ -18,7 +18,7 @@ class _PinScreenState extends State<PinScreen> {
   bool _rejected = false;
 
   String? _validateInfo(String? value) {
-    final UserInfo userInfo = HiveHelper.instance.userInfo;
+    final UserInfo userInfo = HiveHelper.userInfo;
 
     final bool verified = userInfo.matchPin(value!);
 

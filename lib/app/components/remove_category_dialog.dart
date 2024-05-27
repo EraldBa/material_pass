@@ -11,7 +11,7 @@ class RemoveCategoryDialog extends StatefulWidget {
 class _RemoveCategoryDialogState extends State<RemoveCategoryDialog> {
   @override
   Widget build(BuildContext context) {
-    final List<String> categories = HiveHelper.instance.categories.toList();
+    final List<String> categories = HiveHelper.categories.toList();
 
     return AlertDialog(
       title: const Text('Remove vault category'),
@@ -31,7 +31,7 @@ class _RemoveCategoryDialogState extends State<RemoveCategoryDialog> {
                   icon: const Icon(Icons.delete),
                   onPressed: () {
                     setState(() {
-                      HiveHelper.instance.categoryBox.deleteAt(index);
+                      HiveHelper.categoryBox.deleteAt(index);
                     });
                   },
                 ),

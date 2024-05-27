@@ -54,7 +54,7 @@ class _ChangePinDialogState extends State<ChangePinDialog> {
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              final userInfo = HiveHelper.instance.userInfo;
+              final userInfo = HiveHelper.userInfo;
 
               userInfo.pin = _newPin;
               userInfo.save();

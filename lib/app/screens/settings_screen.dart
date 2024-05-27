@@ -108,7 +108,7 @@ class SettingsScreen extends StatelessWidget {
                 if (confirmed) {
                   ShowHelper.pinConfirmationDialog(context).then((confirmed) {
                     if (confirmed) {
-                      HiveHelper.nukeAll().then((_) {
+                      HiveHelper.nukeAllData().then((_) {
                         Navigator.of(context).popAndPushNamed(NukePage.route);
                       });
                     }

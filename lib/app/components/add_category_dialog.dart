@@ -27,7 +27,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               return 'Provided category is empty!';
             }
 
-            if (HiveHelper.instance.categories.contains(value)) {
+            if (HiveHelper.categories.contains(value)) {
               return 'Category already exists!';
             }
 
@@ -39,7 +39,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              HiveHelper.instance.categoryBox.add(_category);
+              HiveHelper.categoryBox.add(_category);
               Navigator.of(context).pop(_category);
             }
           },

@@ -15,7 +15,7 @@ class PinFormField extends StatelessWidget {
   final InputDecoration? inputDecoration;
 
   static String? defaultValidator(String? value) {
-    final validated = HiveHelper.instance.userInfo.matchPin(value ?? '');
+    final validated = HiveHelper.userInfo.matchPin(value ?? '');
 
     if (validated) {
       return null;

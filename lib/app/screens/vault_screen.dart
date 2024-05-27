@@ -23,47 +23,41 @@ class _VaultScreenState extends State<VaultScreen> {
   late List<VaultItem> _filteredVaultItems;
 
   String _selectedCategory = '';
-  bool _isVisible = true;
+  bool _isFABVisible = true;
 
-  void _searchListener() {
-    _search(widget.searchController.text);
-  }
-
-  void _search(String text) {
-    setState(() {
-      if (text.isEmpty) {
-        _filterItems();
-      } else {
-        _searchForItem(_vaultItemListsByType[_selectedCategory]!, text);
-      }
-    });
-  }
-
-  void _searchForItem(List<VaultItem> items, String text) {
-    _filteredVaultItems = items.where((item) {
-      return item.websiteName.toLowerCase().containsAll(text.toLowerCase());
-    }).toList();
-  }
-
-  void _filterItems() {
-    _vaultItemListsByType[_selectedCategory] ??= HiveHelper.instance.vaultItems
+  void _filterAndSearch() {
+    _vaultItemListsByType[_selectedCategory] ??= HiveHelper.vaultItems
         .where((vaultItem) => vaultItem.category == _selectedCategory)
         .toList();
 
-    _filteredVaultItems = _vaultItemListsByType[_selectedCategory]!;
+    final text = widget.searchController.text;
+
+    var items = _vaultItemListsByType[_selectedCategory]!;
+
+    // perform the search only when search text is not empty
+    // for efficiency purposes
+    if (text.isNotEmpty) {
+      items = items.where((item) {
+        return item.websiteName.toLowerCase().containsAll(text.toLowerCase());
+      }).toList();
+    }
+
+    setState(() {
+      _filteredVaultItems = items;
+    });
   }
 
   void _resetItems() {
     setState(() {
       _vaultItemListsByType.clear();
-      _vaultItemListsByType[''] = HiveHelper.instance.vaultItems.toList();
-      _filterItems();
+      _vaultItemListsByType[''] = HiveHelper.vaultItems.toList();
+      _filterAndSearch();
     });
   }
 
-  void _setIsVisible(bool value) {
+  void _setIsFABVisible(bool value) {
     setState(() {
-      _isVisible = value;
+      _isFABVisible = value;
     });
   }
 
@@ -72,24 +66,24 @@ class _VaultScreenState extends State<VaultScreen> {
     super.initState();
 
     _filteredVaultItems =
-        _vaultItemListsByType[''] = HiveHelper.instance.vaultItems.toList();
+        _vaultItemListsByType[''] = HiveHelper.vaultItems.toList();
 
-    widget.searchController.addListener(_searchListener);
+    widget.searchController.addListener(_filterAndSearch);
 
     _scrollController.addListener(() {
       final direction = _scrollController.position.userScrollDirection;
 
       if (direction == ScrollDirection.reverse) {
-        _setIsVisible(false);
+        _setIsFABVisible(false);
       } else if (direction == ScrollDirection.forward) {
-        _setIsVisible(true);
+        _setIsFABVisible(true);
       }
     });
   }
 
   @override
   void dispose() {
-    widget.searchController.removeListener(_searchListener);
+    widget.searchController.removeListener(_filterAndSearch);
     _scrollController.dispose();
 
     super.dispose();
@@ -100,6 +94,7 @@ class _VaultScreenState extends State<VaultScreen> {
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
+        _setIsFABVisible(true);
       },
       child: Scaffold(
         body: Column(
@@ -110,7 +105,7 @@ class _VaultScreenState extends State<VaultScreen> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: HiveHelper.instance.categories.map(
+                  children: HiveHelper.categories.map(
                     (category) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -124,7 +119,7 @@ class _VaultScreenState extends State<VaultScreen> {
                                         ? category
                                         : '';
 
-                                _filterItems();
+                                _filterAndSearch();
                               });
                             }),
                       );
@@ -150,7 +145,7 @@ class _VaultScreenState extends State<VaultScreen> {
             ),
           ],
         ),
-        floatingActionButton: _isVisible
+        floatingActionButton: _isFABVisible
             ? FloatingActionButton(
                 onPressed: () {
                   ShowHelper.vaultItemScreen(context).then((added) {

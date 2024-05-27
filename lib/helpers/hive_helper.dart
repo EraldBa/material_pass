@@ -8,20 +8,31 @@ import 'package:material_pass/models/user_info.dart';
 import 'package:material_pass/models/vault_item.dart';
 
 final class HiveHelper {
-  HiveHelper._internal();
+  HiveHelper._();
 
-  static final HiveHelper _instance = HiveHelper._internal();
-
-  static const String _keyName = 'encryptionKey';
+  static const _keyName = 'encryptionKey';
 
   static late final bool userExists;
 
-  late final Box<VaultItem> _vaultItemBox;
-  late final Box<String> _categories;
-  late final Uint8List _encryptionKey;
-  late final UserInfo _userInfo;
+  static late final Box<VaultItem> _vaultItemBox;
+  static late final Box<String> _categoriesBox;
+  static late final Uint8List _encryptionKey;
+  static late final UserInfo _userInfo;
 
+  static bool _initComplete = false;
+
+  static Iterable<VaultItem> get vaultItems => _vaultItemBox.values;
+  static Iterable<String> get categories => _categoriesBox.values;
+  static Box<String> get categoryBox => _categoriesBox;
+  static Box<VaultItem> get vaultItemBox => _vaultItemBox;
+  static UserInfo get userInfo => _userInfo;
+
+  /// throws [Exception] if method has already been called
   static Future<void> initHive() async {
+    if (_initComplete) {
+      throw Exception('initHive method cannot be called more than once');
+    }
+
     await Hive.initFlutter();
 
     final bool isNotMobile = !Platform.isAndroid && !Platform.isIOS;
@@ -37,34 +48,34 @@ final class HiveHelper {
     await _initKeys();
 
     await _openBoxes();
+
+    _initComplete = true;
   }
 
   /// throws [Exception] if user already exists
   static Future<void> createUser(UserInfo userInfo) async {
     final userBox = await Hive.openBox<UserInfo>(
       'userInfo',
-      encryptionCipher: HiveAesCipher(_instance._encryptionKey),
+      encryptionCipher: HiveAesCipher(_encryptionKey),
     );
 
     if (userBox.isNotEmpty) {
       throw Exception('User already exists');
     }
 
-    _instance._userInfo = userInfo;
+    _userInfo = userInfo;
 
     userBox.add(userInfo);
   }
 
-  static Future<void> nukeAll() async {
+  static Future<void> nukeAllData() async {
     await Hive.deleteFromDisk();
   }
 
   static Future<void> _initKeys() async {
     const secureStorage = FlutterSecureStorage();
 
-    final bool containsKey = await secureStorage.containsKey(key: _keyName);
-
-    if (!containsKey) {
+    if (!await secureStorage.containsKey(key: _keyName)) {
       final List<int> key = Hive.generateSecureKey();
 
       await secureStorage.write(
@@ -75,24 +86,24 @@ final class HiveHelper {
 
     final String? encodedKey = await secureStorage.read(key: _keyName);
 
-    _instance._encryptionKey = base64Url.decode(encodedKey!);
+    _encryptionKey = base64Url.decode(encodedKey!);
   }
 
   static Future<void> _openBoxes() async {
-    _instance._vaultItemBox = await Hive.openBox<VaultItem>(
+    _vaultItemBox = await Hive.openBox<VaultItem>(
       'vaultItems',
-      encryptionCipher: HiveAesCipher(_instance._encryptionKey),
+      encryptionCipher: HiveAesCipher(_encryptionKey),
     );
 
-    _instance._categories = await Hive.openBox<String>('categories');
+    _categoriesBox = await Hive.openBox<String>('categories');
 
     if (userExists) {
       final userBox = await Hive.openBox<UserInfo>(
         'userInfo',
-        encryptionCipher: HiveAesCipher(_instance._encryptionKey),
+        encryptionCipher: HiveAesCipher(_encryptionKey),
       );
 
-      _instance._userInfo = userBox.values.first;
+      _userInfo = userBox.values.first;
     }
   }
 
@@ -100,16 +111,4 @@ final class HiveHelper {
     Hive.registerAdapter(UserInfoAdapter());
     Hive.registerAdapter(VaultItemAdapter());
   }
-
-  static HiveHelper get instance => _instance;
-
-  Iterable<VaultItem> get vaultItems => _vaultItemBox.values;
-
-  Iterable<String> get categories => _categories.values;
-
-  Box<String> get categoryBox => _categories;
-
-  Box<VaultItem> get vaultItemBox => _vaultItemBox;
-
-  UserInfo get userInfo => _userInfo;
 }

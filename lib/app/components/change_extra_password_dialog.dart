@@ -28,8 +28,8 @@ class _ChangeExtraPasswordDialogState extends State<ChangeExtraPasswordDialog> {
                 decoration: const InputDecoration(
                     labelText: 'Enter current ExtraPassword'),
                 validator: (value) {
-                  final validated = HiveHelper.instance.userInfo
-                      .matchExtraPassword(value ?? '');
+                  final validated =
+                      HiveHelper.userInfo.matchExtraPassword(value ?? '');
 
                   if (validated) {
                     return null;
@@ -67,7 +67,7 @@ class _ChangeExtraPasswordDialogState extends State<ChangeExtraPasswordDialog> {
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              final userInfo = HiveHelper.instance.userInfo;
+              final userInfo = HiveHelper.userInfo;
 
               userInfo.extraPassword = _newPassword;
               userInfo.save();

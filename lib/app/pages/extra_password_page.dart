@@ -19,7 +19,7 @@ class _ExtraPasswordPageState extends State<ExtraPasswordPage> {
   bool _nukeAll = false;
 
   String? _validator(String? value) {
-    final UserInfo userInfo = HiveHelper.instance.userInfo;
+    final UserInfo userInfo = HiveHelper.userInfo;
 
     final bool verified = userInfo.matchExtraPassword(value ?? '');
 
@@ -73,7 +73,7 @@ class _ExtraPasswordPageState extends State<ExtraPasswordPage> {
                   }
 
                   if (_nukeAll) {
-                    HiveHelper.nukeAll().then((_) {
+                    HiveHelper.nukeAllData().then((_) {
                       Navigator.of(context).popAndPushNamed(NukePage.route);
                     });
                     // exit the app
