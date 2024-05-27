@@ -18,6 +18,9 @@ class _VaultItemScreenState extends State<VaultItemScreen> {
 
   late final VaultItem _vaultItem;
 
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
   String? _mandatoryFieldValidator(String? value) {
     if (value == null || value.isEmpty) {
       return 'This field cannot be empty';
@@ -83,10 +86,20 @@ class _VaultItemScreenState extends State<VaultItemScreen> {
                 padding: _defaultFormPadding,
                 child: TextFormField(
                   initialValue: widget.vaultItem?.password,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    label: Text('Password *'),
-                    border: OutlineInputBorder(),
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    label: const Text('Password *'),
+                    icon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                      icon: _obscurePassword
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility_off),
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                   onChanged: (value) => _vaultItem.password = value,
                   validator: _mandatoryFieldValidator,
@@ -95,10 +108,21 @@ class _VaultItemScreenState extends State<VaultItemScreen> {
               Padding(
                 padding: _defaultFormPadding,
                 child: TextFormField(
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    label: Text('Confirm Password *'),
-                    border: OutlineInputBorder(),
+                  initialValue: widget.vaultItem?.password,
+                  obscureText: _obscureConfirmPassword,
+                  decoration: InputDecoration(
+                    icon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                      icon: _obscureConfirmPassword
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                    ),
+                    label: const Text('Confirm Password *'),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: _confirmPasswordValidator,
                 ),
