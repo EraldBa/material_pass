@@ -106,7 +106,7 @@ class SettingsScreen extends StatelessWidget {
                     'The entire database holding your info will be erased. Are you sure you want to continue?',
               ).then((confirmed) {
                 if (confirmed) {
-                  ShowHelper.pinConfirmationDialog(context).then((confirmed) {
+                  ShowHelper.confirmWithPinDialog(context).then((confirmed) {
                     if (confirmed) {
                       HiveHelper.nukeAllData().then((_) {
                         Navigator.of(context).popAndPushNamed(NukePage.route);

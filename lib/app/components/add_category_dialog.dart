@@ -39,7 +39,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              HiveHelper.categoryBox.add(_category);
+              HiveHelper.categoriesBox.add(_category);
               Navigator.of(context).pop(_category);
             }
           },

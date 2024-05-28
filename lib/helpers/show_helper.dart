@@ -4,6 +4,8 @@ import 'package:material_pass/app/screens/vault_item_screen.dart';
 import 'package:material_pass/models/vault_item.dart';
 
 final class ShowHelper {
+  ShowHelper._();
+
   static Future<bool> confirmationDialog(
     BuildContext context, {
     required String title,
@@ -52,7 +54,7 @@ final class ShowHelper {
     return confirmation == true;
   }
 
-  static Future<bool> pinConfirmationDialog(BuildContext context) async {
+  static Future<bool> confirmWithPinDialog(BuildContext context) async {
     final bool? confirmation = await showDialog<bool?>(
       context: context,
       builder: (context) {

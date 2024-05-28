@@ -12,7 +12,7 @@ final class HiveHelper {
 
   static const _keyName = 'encryptionKey';
 
-  static late final bool userExists;
+  static late final bool _userExists;
 
   static late final Box<VaultItem> _vaultItemBox;
   static late final Box<String> _categoriesBox;
@@ -23,9 +23,10 @@ final class HiveHelper {
 
   static Iterable<VaultItem> get vaultItems => _vaultItemBox.values;
   static Iterable<String> get categories => _categoriesBox.values;
-  static Box<String> get categoryBox => _categoriesBox;
+  static Box<String> get categoriesBox => _categoriesBox;
   static Box<VaultItem> get vaultItemBox => _vaultItemBox;
   static UserInfo get userInfo => _userInfo;
+  static bool get userExists => _userExists;
 
   /// throws [Exception] if method has already been called
   static Future<void> initHive() async {
@@ -41,7 +42,7 @@ final class HiveHelper {
       Hive.init(Directory.current.path);
     }
 
-    userExists = await Hive.boxExists('userInfo');
+    _userExists = await Hive.boxExists('userInfo');
 
     _registerAdapers();
 
@@ -66,6 +67,17 @@ final class HiveHelper {
     _userInfo = userInfo;
 
     userBox.add(userInfo);
+  }
+
+  static Future<void> removeCategory(int index, String category) async {
+    for (final vaultItem in _vaultItemBox.values) {
+      if (vaultItem.category == category) {
+        vaultItem.category = null;
+        vaultItem.save();
+      }
+    }
+
+    await _categoriesBox.deleteAt(index);
   }
 
   static Future<void> nukeAllData() async {
@@ -97,7 +109,7 @@ final class HiveHelper {
 
     _categoriesBox = await Hive.openBox<String>('categories');
 
-    if (userExists) {
+    if (_userExists) {
       final userBox = await Hive.openBox<UserInfo>(
         'userInfo',
         encryptionCipher: HiveAesCipher(_encryptionKey),

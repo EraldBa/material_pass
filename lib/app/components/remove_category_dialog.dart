@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_pass/helpers/hive_helper.dart';
+import 'package:material_pass/helpers/show_helper.dart';
 
 class RemoveCategoryDialog extends StatefulWidget {
   const RemoveCategoryDialog({super.key});
@@ -30,8 +31,15 @@ class _RemoveCategoryDialogState extends State<RemoveCategoryDialog> {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
-                    setState(() {
-                      HiveHelper.categoryBox.deleteAt(index);
+                    ShowHelper.confirmationDialog(
+                      context,
+                      title: 'Delete item "$category"',
+                    ).then((confirmed) {
+                      if (confirmed) {
+                        setState(() {
+                          HiveHelper.removeCategory(index, category);
+                        });
+                      }
                     });
                   },
                 ),
